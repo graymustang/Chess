@@ -81,11 +81,42 @@ public class ChessPiece {
                     {0, -1}
             });
 
-            //Add other pieces later
+            case KNIGHT -> addKnightMoves(board, myPosition, moves);
+
+            case KING -> addKingMoves(board, myPosition, moves);
+
+
+
+
+
             default -> { }
         }
 
         return moves;
+    }
+
+    private void addKnightMoves(ChessBoard board, ChessPosition start, Collection<ChessMove> moves){
+        int[][] offsets = {
+                {2, 1}, {2, -1},
+                {-2, 1}, {-2, -1},
+                {1, 2}, {1, -2},
+                {-1, 2}, {-1, -2}
+        };
+        for (int[] off : offsets) {
+            int r = start.getRow() + off[0];
+            int c = start.getColumn() + off[1];
+
+            if ( r < 1 || r > 8 || c < 1 || c > 8){
+                continue;
+            }
+            ChessPosition next = new ChessPosition(r, c);
+            ChessPiece onSquare = board.getPiece(next);
+
+            if (onSquare == null || onSquare.getTeamColor() != this.getTeamColor()){
+                moves.add(new ChessMove(start, next, null));
+            }
+        }
+
     }
 
     private void addSlidingMoves(ChessBoard board, ChessPosition start, Collection<ChessMove> moves, int[][] directions) {
