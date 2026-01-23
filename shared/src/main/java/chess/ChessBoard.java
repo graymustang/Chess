@@ -53,12 +53,12 @@ public class ChessBoard {
         place(1, 7, ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
         place(1, 8, ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
 
-        for (int col = 1; col <= 8; col++){
+        for (int col = 1; col <= 8; col++) {
             place(2, col, ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         }
 
         //black pieces set
-        for (int col = 1; col <= 8; col++){
+        for (int col = 1; col <= 8; col++) {
             place(7, col, ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
         }
         place(8, 1, ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
@@ -69,8 +69,22 @@ public class ChessBoard {
         place(8, 6, ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
         place(8, 7, ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
         place(8, 8, ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
-
-
-
     }
+
+    private void place(int row, int col, ChessGame.TeamColor color, ChessPiece.PieceType type) {
+        squares[row - 1][col - 1] = new ChessPiece(color, type);
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ChessBoard)) return false;
+        ChessBoard chessBoard = (ChessBoard) o;
+        return Arrays.deepEquals(squares, chessBoard.squares);
+    }
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(squares);
+    }
+
 }
+
