@@ -1,77 +1,77 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Objects;
 
-/**
- * Represents a single chess piece
- * <p>
- * Note: You can add to this class, but you may not alter
- * signature of the existing methods.
- */
 public class ChessPiece {
-    private final ChessGame.TeamColor pieceColor;
-    private final PieceType type;
-
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
-        this.pieceColor = pieceColor;
-        this.type = type;
-    }
 
     public enum PieceType {
-        KING,
-        QUEEN,
-        BISHOP,
-        KNIGHT,
-        ROOK,
-        PAWN
+        KING, QUEEN, BISHOP, KNIGHT, ROOK, PAWN
+    }
+
+    private final ChessGame.TeamColor teamColor;
+    private final PieceType pieceType;
+
+    public ChessPiece(ChessGame.TeamColor teamColor, PieceType type) {
+        this.teamColor = teamColor;
+        this.pieceType = type;
     }
 
     public ChessGame.TeamColor getTeamColor() {
-        return pieceColor;
+        return teamColor;
     }
 
     public PieceType getPieceType() {
-        return type;
+        return pieceType;
     }
 
-    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> moves = new HashSet<>();
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition start) {
+        if (board == null || start == null || !start.inBounds()) return new ArrayList<>();
 
-        switch (type) {
-            case BISHOP -> addSlidingMoves(board, myPosition, moves, new int[][]{
-                    {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
-            });
-            case ROOK -> addSlidingMoves(board, myPosition, moves, new int[][]{
-                    {1, 0}, {-1, 0}, {0, 1}, {0, -1}
-            });
-            case QUEEN -> addSlidingMoves(board, myPosition, moves, new int[][]{
-                    {1, 1}, {1, -1}, {-1, 1}, {-1, -1},
-                    {1, 0}, {-1, 0}, {0, 1}, {0, -1}
-            });
-            case KNIGHT -> addKnightMoves(board, myPosition, moves);
-            case KING -> addKingMoves(board, myPosition, moves);
-            case PAWN -> addPawnMoves(board, myPosition, moves);
+        Collection<ChessMove> moves = new ArrayList<>();
+
+        switch (pieceType) {
+            case KING:
+                addKingMoves(board, start, moves);
+                break;
+            case QUEEN:
+                addSlidingMoves(board, start, moves, new int[][]{{1,0},{-1,0},{0,1},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}});
+                break;
+            case ROOK:
+                addSlidingMoves(board, start, moves, new int[][]{{1,0},{-1,0},{0,1},{0,-1}});
+                break;
+            case BISHOP:
+                addSlidingMoves(board, start, moves, new int[][]{{1,1},{1,-1},{-1,1},{-1,-1}});
+                break;
+            case KNIGHT:
+                addKnightMoves(board, start, moves);
+                break;
+            case PAWN:
+                addPawnMoves(board, start, moves);
+                break;
         }
 
         return moves;
     }
 
-    private boolean inBounds(int r, int c) {
-        return r >= 1 && r <= 8 && c >= 1 && c <= 8;
+    private void addKingMoves(ChessBoard board, ChessPosition start, Collection<ChessMove> moves) {
+        int r = start.getRow();
+        int c = start.getColumn();
+        for (int dr = -1; dr <= 1; dr++) {
+            for (int dc = -1; dc <= 1; dc++) {
+                if (dr == 0 && dc == 0) continue;
+                addMoveIfOk(board, start, r + dr, c + dc, moves);
+            }
+        }
     }
 
-    private void addMoveIfOk(ChessBoard board, ChessPosition start, int r, int c, Collection<ChessMove> moves) {
-        if (!inBounds(r, c)) return;
-
-        ChessPosition end = new ChessPosition(r, c);
-        ChessPiece target = board.getPiece(end);
-
-        if (target == null) {
-            moves.add(new ChessMove(start, end, null));
-        } else if (target.getTeamColor() != this.getTeamColor()) {
-            moves.add(new ChessMove(start, end, null));
+    private void addKnightMoves(ChessBoard board, ChessPosition start, Collection<ChessMove> moves) {
+        int r = start.getRow();
+        int c = start.getColumn();
+        int[][] deltas = {{2,1},{2,-1},{-2,1},{-2,-1},{1,2},{1,-2},{-1,2},{-1,-2}};
+        for (int[] d : deltas) {
+            addMoveIfOk(board, start, r + d[0], c + d[1], moves);
         }
     }
 
@@ -79,116 +79,69 @@ public class ChessPiece {
         int sr = start.getRow();
         int sc = start.getColumn();
 
-        for (int[] d : dirs) {
-            int r = sr + d[0];
-            int c = sc + d[1];
+        for (int[] dir : dirs) {
+            int r = sr + dir[0];
+            int c = sc + dir[1];
 
-            while (inBounds(r, c)) {
-                ChessPosition end = new ChessPosition(r, c);
-                ChessPiece target = board.getPiece(end);
+            while (r >= 1 && r <= 8 && c >= 1 && c <= 8) {
+                ChessPosition next = new ChessPosition(r, c);
+                ChessPiece onSquare = board.getPiece(next);
 
-                if (target == null) {
-                    moves.add(new ChessMove(start, end, null));
+                if (onSquare == null) {
+                    moves.add(new ChessMove(start, next, null));
                 } else {
-                    if (target.getTeamColor() != this.getTeamColor()) {
-                        moves.add(new ChessMove(start, end, null));
+                    if (onSquare.teamColor != this.teamColor) {
+                        moves.add(new ChessMove(start, next, null));
                     }
                     break; // blocked
                 }
 
-                r += d[0];
-                c += d[1];
-            }
-        }
-    }
-
-    private void addKnightMoves(ChessBoard board, ChessPosition start, Collection<ChessMove> moves) {
-        int[][] offsets = {
-                {2, 1}, {2, -1}, {-2, 1}, {-2, -1},
-                {1, 2}, {1, -2}, {-1, 2}, {-1, -2}
-        };
-
-        int sr = start.getRow();
-        int sc = start.getColumn();
-
-        for (int[] o : offsets) {
-            addMoveIfOk(board, start, sr + o[0], sc + o[1], moves);
-        }
-    }
-
-    private void addKingMoves(ChessBoard board, ChessPosition start, Collection<ChessMove> moves) {
-        int sr = start.getRow();
-        int sc = start.getColumn();
-
-        for (int dr = -1; dr <= 1; dr++) {
-            for (int dc = -1; dc <= 1; dc++) {
-                if (dr == 0 && dc == 0) continue;
-                addMoveIfOk(board, start, sr + dr, sc + dc, moves);
+                r += dir[0];
+                c += dir[1];
             }
         }
     }
 
     private void addPawnMoves(ChessBoard board, ChessPosition start, Collection<ChessMove> moves) {
-        int direction;
-        int startRow;
-
-        if (this.getTeamColor() == ChessGame.TeamColor.WHITE) {
-            direction = 1;
-            startRow = 2;
-        } else {
-            direction = -1;
-            startRow = 7;
-        }
-
         int r = start.getRow();
         int c = start.getColumn();
 
+        int dir = (teamColor == ChessGame.TeamColor.WHITE) ? 1 : -1;
+        int startRow = (teamColor == ChessGame.TeamColor.WHITE) ? 2 : 7;
+        int promoteRow = (teamColor == ChessGame.TeamColor.WHITE) ? 8 : 1;
+
         // 1 forward
-        int oneR = r + direction;
-        if (inBounds(oneR, c)) {
-            ChessPosition oneForward = new ChessPosition(oneR, c);
-            if (board.getPiece(oneForward) == null) {
-                addPawnMoveOrPromotions(start, oneForward, moves);
+        ChessPosition oneForward = new ChessPosition(r + dir, c);
+        if (oneForward.inBounds() && board.getPiece(oneForward) == null) {
+            addPawnMoveWithPromotion(start, oneForward, promoteRow, moves);
 
-                // 2 forward from start row (only if 1 forward was clear)
-                int twoR = r + 2 * direction;
-                if (r == startRow && inBounds(twoR, c)) {
-                    ChessPosition twoForward = new ChessPosition(twoR, c);
-                    if (board.getPiece(twoForward) == null) {
-                        moves.add(new ChessMove(start, twoForward, null));
-                    }
-                }
+            // 2 forward from start row
+            ChessPosition twoForward = new ChessPosition(r + 2 * dir, c);
+            if (r == startRow && twoForward.inBounds() && board.getPiece(twoForward) == null) {
+                moves.add(new ChessMove(start, twoForward, null));
             }
         }
 
-        // capture diag left
-        int dlR = r + direction;
-        int dlC = c - 1;
-        if (inBounds(dlR, dlC)) {
-            ChessPosition diagLeft = new ChessPosition(dlR, dlC);
-            ChessPiece target = board.getPiece(diagLeft);
-            if (target != null && target.getTeamColor() != this.getTeamColor()) {
-                addPawnMoveOrPromotions(start, diagLeft, moves);
+        // captures
+        ChessPosition diagL = new ChessPosition(r + dir, c - 1);
+        if (diagL.inBounds()) {
+            ChessPiece p = board.getPiece(diagL);
+            if (p != null && p.teamColor != this.teamColor) {
+                addPawnMoveWithPromotion(start, diagL, promoteRow, moves);
             }
         }
 
-        // capture diag right
-        int drR = r + direction;
-        int drC = c + 1;
-        if (inBounds(drR, drC)) {
-            ChessPosition diagRight = new ChessPosition(drR, drC);
-            ChessPiece target = board.getPiece(diagRight);
-            if (target != null && target.getTeamColor() != this.getTeamColor()) {
-                addPawnMoveOrPromotions(start, diagRight, moves);
+        ChessPosition diagR = new ChessPosition(r + dir, c + 1);
+        if (diagR.inBounds()) {
+            ChessPiece p = board.getPiece(diagR);
+            if (p != null && p.teamColor != this.teamColor) {
+                addPawnMoveWithPromotion(start, diagR, promoteRow, moves);
             }
         }
     }
 
-    private void addPawnMoveOrPromotions(ChessPosition start, ChessPosition end, Collection<ChessMove> moves) {
-        int endRow = end.getRow();
-
-        // promotion rank
-        if (endRow == 8 || endRow == 1) {
+    private void addPawnMoveWithPromotion(ChessPosition start, ChessPosition end, int promoteRow, Collection<ChessMove> moves) {
+        if (end.getRow() == promoteRow) {
             moves.add(new ChessMove(start, end, PieceType.QUEEN));
             moves.add(new ChessMove(start, end, PieceType.ROOK));
             moves.add(new ChessMove(start, end, PieceType.BISHOP));
@@ -198,17 +151,29 @@ public class ChessPiece {
         }
     }
 
+    private void addMoveIfOk(ChessBoard board, ChessPosition start, int r, int c, Collection<ChessMove> moves) {
+        if (r < 1 || r > 8 || c < 1 || c > 8) return;
+
+        ChessPosition end = new ChessPosition(r, c);
+        ChessPiece onSquare = board.getPiece(end);
+
+        if (onSquare == null) {
+            moves.add(new ChessMove(start, end, null));
+        } else if (onSquare.teamColor != this.teamColor) {
+            moves.add(new ChessMove(start, end, null));
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ChessPiece that = (ChessPiece) o;
-        return pieceColor == that.pieceColor && type == that.type;
+        if (this == o) return true;
+        if (!(o instanceof ChessPiece)) return false;
+        ChessPiece chessPiece = (ChessPiece) o;
+        return teamColor == chessPiece.teamColor && pieceType == chessPiece.pieceType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(pieceColor, type);
+        return Objects.hash(teamColor, pieceType);
     }
 }
