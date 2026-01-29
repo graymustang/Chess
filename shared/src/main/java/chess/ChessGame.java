@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -11,14 +12,15 @@ import java.util.Collection;
 public class ChessGame {
 
     public ChessGame() {
-
+        board.resetBoard();
+        teamTurn = teamColor.WHITE;
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return getTeamTurn;
     }
 
     /**
@@ -27,7 +29,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        teamTurn = team;
     }
 
     /**
@@ -46,7 +48,21 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = board.getPiece(startPosition);
+        if (piece == null) return null;
+
+        Collection<ChessMove> pieceMoves = piece.pieceMoves(board, startPosition);
+        Collection<ChessMove> legal = new ArrayList<>();
+
+        for (ChessMove move : pieceMoves){
+            ChessBoard copy = copyBoard(board);
+            applyMoveOnBoard(copy, move, piece.getTeamColor());
+            if (!isInCheck(piece.getTeamColor(), copy)){
+                legal.add(move);
+            }
+        }
+
+        return legal;
     }
 
     /**
@@ -96,7 +112,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.board = board;
     }
 
     /**
