@@ -183,4 +183,20 @@ public class ChessGame {
         }
         return false;
     }
+
+    private ChessPosition findKing(TeamColor color, ChessBoard onBoard){
+        for (int r = 1; r <= 8; r++){
+            for (int c = 1; c <= 8; c++){
+                ChessPosition pos = new ChessPosition(r, c);
+                ChessPiece p = onBoard.getPiece(pos);
+                if (p == null) continue;
+                if (p.getTeamColor() == color && p.getPieceType() == ChessPiece.PieceType.KING){
+                    return pos;
+                }
+            }
+        }
+        return null;
+    }
+
+
 }
