@@ -27,7 +27,9 @@ public class ChessPiece {
     }
 
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition start) {
-        if (board == null || start == null || !start.inBounds()) return new ArrayList<>();
+        if (board == null || start == null || !inBounds(start)) return new ArrayList<>();
+
+
 
         Collection<ChessMove> moves = new ArrayList<>();
 
@@ -112,19 +114,19 @@ public class ChessPiece {
 
         // 1 forward
         ChessPosition oneForward = new ChessPosition(r + dir, c);
-        if (oneForward.inBounds() && board.getPiece(oneForward) == null) {
+        if (inBounds(oneForward) && board.getPiece(oneForward) == null) {
             addPawnMoveWithPromotion(start, oneForward, promoteRow, moves);
 
             // 2 forward from start row
             ChessPosition twoForward = new ChessPosition(r + 2 * dir, c);
-            if (r == startRow && twoForward.inBounds() && board.getPiece(twoForward) == null) {
+            if (r == startRow && inBounds(twoForward) && board.getPiece(twoForward) == null) {
                 moves.add(new ChessMove(start, twoForward, null));
             }
         }
 
         // captures
         ChessPosition diagL = new ChessPosition(r + dir, c - 1);
-        if (diagL.inBounds()) {
+        if (inBounds(diagL)) {
             ChessPiece p = board.getPiece(diagL);
             if (p != null && p.teamColor != this.teamColor) {
                 addPawnMoveWithPromotion(start, diagL, promoteRow, moves);
@@ -132,7 +134,7 @@ public class ChessPiece {
         }
 
         ChessPosition diagR = new ChessPosition(r + dir, c + 1);
-        if (diagR.inBounds()) {
+        if (inBounds(diagR)) {
             ChessPiece p = board.getPiece(diagR);
             if (p != null && p.teamColor != this.teamColor) {
                 addPawnMoveWithPromotion(start, diagR, promoteRow, moves);
@@ -163,6 +165,14 @@ public class ChessPiece {
             moves.add(new ChessMove(start, end, null));
         }
     }
+
+    private boolean inBounds(ChessPosition pos) {
+        int r = pos.getRow();
+        int c = pos.getColumn();
+        return r >= 1 && r <= 8 && c >= 1 && c <= 8;
+    }
+
+
 
     @Override
     public boolean equals(Object o) {
