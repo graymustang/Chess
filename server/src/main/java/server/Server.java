@@ -52,10 +52,6 @@ public class Server {
             ctx.status(500).result(JsonUtil.GSON.toJson(new ErrorResult("Error: " + e.getMessage())));
         });
 
-
-
-
-
     }
 
     public int run(int desiredPort) {
