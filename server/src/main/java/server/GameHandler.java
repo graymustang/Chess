@@ -89,8 +89,4 @@ public class GameHandler{
         public String gameName;
     }
 
-    public static class JoinGameRequest {
-        public String playerColor;
-        public Integer gameID;
-    }
 }

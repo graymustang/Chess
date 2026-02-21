@@ -12,11 +12,5 @@ public class MemoryDatabase{
     final Map<Integer, GameData> games = new HashMap<>();
     int nextGameID = 1;
 
-    public void clearAll(){
-        users.clear();
-        auths.clear();
-        games.clear();
-        nextGameID = 1;
-    }
 }
 
