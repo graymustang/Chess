@@ -5,7 +5,6 @@ import dataaccess.UserDAO;
 import model.AuthData;
 import model.UserData;
 
-import java.security.Provider;
 import java.util.UUID;
 
 public class UserService {

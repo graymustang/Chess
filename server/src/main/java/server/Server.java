@@ -2,10 +2,8 @@ package server;
 
 import io.javalin.Javalin;
 import dataaccess.*;
-import org.eclipse.jetty.server.Authentication;
 import service.*;
 
-import java.security.Provider;
 
 public class Server {
 
@@ -44,13 +42,11 @@ public class Server {
         javalin.put("/game", gameHandler::join);
 
         //exception handling
-        javalin.exception(ServiceException.class, (e, ctx) -> {
-            ctx.status(e.status()).result(JsonUtil.GSON.toJson(new ErrorResult(e.getMessage())));
-        });
+        javalin.exception(ServiceException.class, (e, ctx) ->
+                ctx.status(e.status()).result(JsonUtil.GSON.toJson(new ErrorResult(e.getMessage()))));
 
-        javalin.exception(Exception.class, (e, ctx) -> {
-            ctx.status(500).result(JsonUtil.GSON.toJson(new ErrorResult("Error: " + e.getMessage())));
-        });
+        javalin.exception(Exception.class, (e, ctx) ->
+                ctx.status(500).result(JsonUtil.GSON.toJson(new ErrorResult("Error: " + e.getMessage()))));
 
     }
 

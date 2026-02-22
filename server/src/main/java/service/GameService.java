@@ -6,7 +6,6 @@ import dataaccess.GameDAO;
 import model.AuthData;
 import model.GameData;
 
-import java.security.Provider;
 import java.util.Collection;
 
 public class GameService{

@@ -3,7 +3,6 @@ package server;
 import io.javalin.http.Context;
 import model.AuthData;
 import model.UserData;
-import service.ServiceException;
 import service.UserService;
 
 public class UserHandler{
