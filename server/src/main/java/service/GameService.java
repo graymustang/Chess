@@ -26,7 +26,7 @@ public class GameService{
 
     public int createGame(String authToken, String gameName) throws Exception{
         requireAuth(authToken);
-        if (gameName == null) throw new ServiceException(400, "Error, bad request");
+        if (gameName == null) throw new ServiceException(400, "Error: bad request");
 
         ChessGame game = new ChessGame();
         return games.createGame(new GameData(0, null, null, gameName, game));
