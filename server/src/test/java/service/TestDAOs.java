@@ -1,90 +1,31 @@
-package java.service;
+package service;
 
-import dataaccess.AuthDAO;
-import dataaccess.GameDAO;
-import dataaccess.UserDAO;
-import model.AuthData;
-import model.GameData;
-import model.UserData;
-
-import java.util.*;
+import dataaccess.*;
 
 public class TestDAOs {
 
-    public static class FakeUserDAO implements UserDAO {
-        private final Map<String, UserData> users = new HashMap<>();
+    private static MemoryDatabase mem = new MemoryDatabase();
+    private static UserDAO userDAO = new MemoryUserDAO(mem);
+    private static AuthDAO authDAO = new MemoryAuthDAO(mem);
+    private static GameDAO gameDAO = new MemoryGameDAO(mem);
 
-        @Override
-        public UserData getUser(String username) {
-            return users.get(username);
-        }
-
-        @Override
-        public void createUser(UserData user) {
-            users.put(user.username(), user);
-        }
-
-        @Override
-        public void clear() {
-            users.clear();
-        }
+    public static UserService createUserService() {
+        return new UserService(userDAO, authDAO);
     }
 
-    public static class FakeAuthDAO implements AuthDAO {
-        private final Map<String, AuthData> auths = new HashMap<>();
-
-        @Override
-        public AuthData getAuth(String token) {
-            return auths.get(token);
-        }
-
-        @Override
-        public void createAuth(AuthData auth) {
-            auths.put(auth.authToken(), auth);
-        }
-
-        @Override
-        public void deleteAuth(String token) {
-            auths.remove(token);
-        }
-
-        @Override
-        public void clear() {
-            auths.clear();
-        }
+    public static GameService createGameService() {
+        return new GameService(gameDAO, authDAO);
     }
 
-    public static class FakeGameDAO implements GameDAO {
-        private final Map<Integer, GameData> games = new HashMap<>();
-        private int nextId = 1;
+    public static ClearService createClearService() {
+        return new ClearService(userDAO, authDAO, gameDAO);
+    }
 
-        @Override
-        public int createGame(GameData game) {
-            int id = nextId++;
-            GameData stored = new GameData(id, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game());
-            games.put(id, stored);
-            return id;
-        }
-
-        @Override
-        public Collection<GameData> listGames() {
-            return new ArrayList<>(games.values());
-        }
-
-        @Override
-        public GameData getGame(int gameID) {
-            return games.get(gameID);
-        }
-
-        @Override
-        public void updateGame(GameData game) {
-            games.put(game.gameID(), game);
-        }
-
-        @Override
-        public void clear() {
-            games.clear();
-            nextId = 1;
-        }
+    //reset the tests
+    public static void reset() {
+        mem = new MemoryDatabase();
+        userDAO = new MemoryUserDAO(mem);
+        authDAO = new MemoryAuthDAO(mem);
+        gameDAO = new MemoryGameDAO(mem);
     }
 }
