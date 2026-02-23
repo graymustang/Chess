@@ -129,25 +129,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        if (!isInCheck(teamColor)) {
-            return false;
-        }
-
-        //legal move means no checkmate
-        for (int r = 1; r <= 8; r++) {
-            for (int c = 1; c <= 8; c++) {
-                ChessPosition pos = new ChessPosition(r, c);
-                ChessPiece p = board.getPiece(pos);
-                if (p != null && p.getTeamColor() == teamColor) {
-                    Collection<ChessMove> moves = validMoves(pos);
-                    if (moves != null && !moves.isEmpty()) {
-                        return false;
-                    }
-                }
-            }
-        }
-
-        return true;
+        return isInCheck(teamColor) && !hasAnyLegalMove(teamColor);
     }
 
     /**
@@ -158,25 +140,29 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        if (isInCheck(teamColor)) {
-            return false;
-        }
+        return !isInCheck(teamColor) && !hasAnyLegalMove(teamColor);
+    }
 
-        //legal move means no stalemate
+    private boolean hasAnyLegalMove(TeamColor teamColor){
         for (int r = 1; r <= 8; r++) {
             for (int c = 1; c <= 8; c++) {
                 ChessPosition pos = new ChessPosition(r, c);
-                ChessPiece p = board.getPiece(pos);
-                if (p != null && p.getTeamColor() == teamColor) {
-                    Collection<ChessMove> moves = validMoves(pos);
-                    if (moves != null && !moves.isEmpty()) {
-                        return false;
-                    }
+                ChessPiece piece = board.getPiece(pos);
+
+                if (piece == null){
+                    continue;
+                }
+                if(piece.getTeamColor() != teamColor){
+                    continue;
+                }
+
+                Collection<ChessMove> moves = validMoves(pos);
+                if (moves != null && !moves.isEmpty()){
+                    return true;
                 }
             }
         }
-
-        return true;
+        return false;
     }
 
     /**
@@ -250,6 +236,7 @@ public class ChessGame {
         }
         return null;
     }
+
 
     private void applyMove(ChessBoard b, ChessMove move) {
         ChessPosition start = move.getStartPosition();
