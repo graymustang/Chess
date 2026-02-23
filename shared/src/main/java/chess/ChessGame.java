@@ -217,8 +217,12 @@ public class ChessGame {
                     int dir = (enemy == TeamColor.WHITE) ? 1 : -1;
                     ChessPosition a1 = new ChessPosition(r + dir, c - 1);
                     ChessPosition a2 = new ChessPosition(r + dir, c + 1);
-                    if (inBounds(a1) && a1.equals(kingPos)) return true;
-                    if (inBounds(a2) && a2.equals(kingPos)) return true;
+                    if (inBounds(a1) && a1.equals(kingPos)) {
+                        return true;
+                    }
+                    if (inBounds(a2) && a2.equals(kingPos)) {
+                        return true;
+                    }
                     continue;
                 }
 
@@ -285,8 +289,13 @@ public class ChessGame {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ChessGame)) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof ChessGame)) {
+            return false;
+        }
         ChessGame chessGame = (ChessGame) o;
         return Objects.equals(board, chessGame.board) && teamTurn == chessGame.teamTurn;
     }

@@ -27,7 +27,9 @@ public class ChessPiece {
     }
 
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition start) {
-        if (board == null || start == null || !inBounds(start)) return new ArrayList<>();
+        if (board == null || start == null || !inBounds(start)) {
+            return new ArrayList<>();
+        }
 
 
 
@@ -62,7 +64,9 @@ public class ChessPiece {
         int c = start.getColumn();
         for (int dr = -1; dr <= 1; dr++) {
             for (int dc = -1; dc <= 1; dc++) {
-                if (dr == 0 && dc == 0) continue;
+                if (dr == 0 && dc == 0) {
+                    continue;
+                }
                 addMoveIfOk(board, start, r + dr, c + dc, moves);
             }
         }
@@ -154,7 +158,9 @@ public class ChessPiece {
     }
 
     private void addMoveIfOk(ChessBoard board, ChessPosition start, int r, int c, Collection<ChessMove> moves) {
-        if (r < 1 || r > 8 || c < 1 || c > 8) return;
+        if (r < 1 || r > 8 || c < 1 || c > 8) {
+            return;
+        }
 
         ChessPosition end = new ChessPosition(r, c);
         ChessPiece onSquare = board.getPiece(end);
@@ -176,8 +182,13 @@ public class ChessPiece {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ChessPiece)) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof ChessPiece)) {
+            return false;
+        }
         ChessPiece chessPiece = (ChessPiece) o;
         return teamColor == chessPiece.teamColor && pieceType == chessPiece.pieceType;
     }

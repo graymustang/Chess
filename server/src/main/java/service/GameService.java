@@ -18,15 +18,21 @@ public class GameService{
     }
 
     private AuthData requireAuth(String token) throws Exception{
-        if (token == null) throw new ServiceException(401, "Error: unauthorized");
+        if (token == null) {
+            throw new ServiceException(401, "Error: unauthorized");
+        }
         AuthData auth = auths.getAuth(token);
-        if (auth == null) throw new ServiceException(401, "Error: unauthorized");
+        if (auth == null) {
+            throw new ServiceException(401, "Error: unauthorized");
+        }
         return auth;
     }
 
     public int createGame(String authToken, String gameName) throws Exception{
         requireAuth(authToken);
-        if (gameName == null) throw new ServiceException(400, "Error: bad request");
+        if (gameName == null) {
+            throw new ServiceException(400, "Error: bad request");
+        }
 
         ChessGame game = new ChessGame();
         return games.createGame(new GameData(0, null, null, gameName, game));
@@ -39,10 +45,14 @@ public class GameService{
 
     public void joinGame(String authToken, String playerColor, Integer gameID) throws Exception{
         AuthData auth = requireAuth(authToken);
-        if (gameID == null) throw new ServiceException(400, "Error: bad request");
+        if (gameID == null) {
+            throw new ServiceException(400, "Error: bad request");
+        }
 
         GameData g = games.getGame(gameID);
-        if (g == null) throw new ServiceException(400, "Error: bad request");
+        if (g == null) {
+            throw new ServiceException(400, "Error: bad request");
+        }
 
         if (playerColor == null){
             return;
@@ -54,10 +64,14 @@ public class GameService{
         }
 
         if (color.equals("WHITE")){
-            if (g.whiteUsername() != null) throw new ServiceException(403, "Error: already taken");
+            if (g.whiteUsername() != null) {
+                throw new ServiceException(403, "Error: already taken");
+            }
             games.updateGame(new GameData(g.gameID(), auth.username(), g.blackUsername(), g.gameName(), g.game()));
         } else {
-            if (g.blackUsername() != null) throw new ServiceException(403, "Error: already taken");
+            if (g.blackUsername() != null) {
+                throw new ServiceException(403, "Error: already taken");
+            }
             games.updateGame(new GameData(g.gameID(), g.whiteUsername(), auth.username(), g.gameName(), g.game()));
 
         }

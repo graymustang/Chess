@@ -48,8 +48,14 @@ public class UserService {
     }
 
     public void logout(String authToken) throws Exception{
-        if (authToken == null) throw new ServiceException(401, "Error: unauthorized");
-        if(auths.getAuth(authToken) == null) throw new ServiceException(401, "Error: unauthorized");
+        if (authToken == null) {
+            throw new ServiceException(401, "Error: unauthorized");
+        }
+
+        if(auths.getAuth(authToken) == null) {
+            throw new ServiceException(401, "Error: unauthorized");
+        }
+
         auths.deleteAuth(authToken);
     }
 }
