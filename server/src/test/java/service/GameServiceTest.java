@@ -1,5 +1,6 @@
 package service;
 
+import dataaccess.*;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -17,8 +18,13 @@ public class GameServiceTest {
 
     @BeforeEach
     void setUp() {
-        userService = TestDAOs.createUserService();
-        gameService = TestDAOs.createGameService();
+        MemoryDatabase mem = new MemoryDatabase();
+        UserDAO userDAO = new MemoryUserDAO(mem);
+        AuthDAO authDAO = new MemoryAuthDAO(mem);
+        GameDAO gameDAO = new MemoryGameDAO(mem);
+
+        userService = new UserService(userDAO, authDAO);
+        gameService = new GameService(gameDAO, authDAO);
     }
 
     private String registerAndGetToken() throws Exception {

@@ -35,7 +35,6 @@ public class ClearServiceTest {
 
         clearService.clear();
 
-        // user should be gone now, so login should fail
         assertThrows(ServiceException.class,
                 () -> userService.login(new UserData("bob", "pass", null)));
     }
