@@ -16,8 +16,8 @@ public class ClearService{
     }
 
     public void clear() throws Exception{
-        users.clear();
         auths.clear();
         games.clear();
+        users.clear();
     }
 }
