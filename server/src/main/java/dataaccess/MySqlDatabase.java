@@ -19,7 +19,7 @@ public class MySqlDatabase {
 
     private static final String[] CREATE_TABLE_STATEMENTS = {
             """
-            CREATE TABLE IF NOT EXISTS user (
+            CREATE TABLE IF NOT EXISTS `user` (
                 username VARCHAR(256) NOT NULL,
                 password VARCHAR(60) NOT NULL,
                 email VARCHAR(256) NOT NULL,
@@ -31,7 +31,7 @@ public class MySqlDatabase {
                 authToken VARCHAR(256) NOT NULL,
                 username VARCHAR(256) NOT NULL,
                 PRIMARY KEY (authToken),
-                FOREIGN KEY (username) REFERENCES user(username) ON DELETE CASCADE
+                FOREIGN KEY (username) REFERENCES `user`(username) ON DELETE CASCADE
             )
             """,
             """
