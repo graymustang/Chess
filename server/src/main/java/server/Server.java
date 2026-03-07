@@ -44,6 +44,8 @@ public class Server {
 
         javalin.exception(Exception.class, (e, ctx) ->
                 ctx.status(500).result(JsonUtil.GSON.toJson(new ErrorResult("Error: " + e.getMessage()))));
+
+
     }
 
     public int run(int desiredPort) {
