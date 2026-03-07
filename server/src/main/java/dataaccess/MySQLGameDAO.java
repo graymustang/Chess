@@ -12,7 +12,9 @@ import java.util.Collection;
 public class MySqlGameDAO implements GameDAO {
     @Override
     public int createGame(GameData game) throws DataAccessException {
-        if (game == null) throw new DataAccessException("game is null");
+        if (game == null) {
+            throw new DataAccessException("game is null");
+        }
 
         String gameJson = JsonUtil.GSON.toJson(game.game());
 
@@ -29,7 +31,9 @@ public class MySqlGameDAO implements GameDAO {
             ps.executeUpdate();
 
             try (var rs = ps.getGeneratedKeys()) {
-                if (!rs.next()) throw new DataAccessException("failed to get generated game id");
+                if (!rs.next()) {
+                    throw new DataAccessException("failed to get generated game id");
+                }
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
@@ -45,7 +49,9 @@ public class MySqlGameDAO implements GameDAO {
 
             ps.setInt(1, gameID);
             try (var rs = ps.executeQuery()) {
-                if (!rs.next()) return null;
+                if (!rs.next()) {
+                    return null;
+                }
 
                 ChessGame gameObj = JsonUtil.GSON.fromJson(rs.getString("gameState"), ChessGame.class);
                 return new GameData(
@@ -86,7 +92,9 @@ public class MySqlGameDAO implements GameDAO {
 
     @Override
     public void updateGame(GameData game) throws DataAccessException {
-        if (game == null) throw new DataAccessException("game is null");
+        if (game == null) {
+            throw new DataAccessException("game is null");
+        }
 
         String gameJson = JsonUtil.GSON.toJson(game.game());
 

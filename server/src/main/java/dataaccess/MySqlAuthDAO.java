@@ -7,7 +7,9 @@ public class MySqlAuthDAO implements AuthDAO {
 
     @Override
     public void createAuth(AuthData auth) throws DataAccessException {
-        if (auth == null) throw new DataAccessException("auth is null");
+        if (auth == null) {
+            throw new DataAccessException("auth is null");
+        }
 
         try (var conn = DatabaseManager.getConnection();
              var ps = conn.prepareStatement("INSERT INTO auth (authToken, username) VALUES (?, ?)")) {
@@ -21,13 +23,17 @@ public class MySqlAuthDAO implements AuthDAO {
 
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
-        if (authToken == null) return null;
+        if (authToken == null) {
+            return null;
+        }
 
         try (var conn = DatabaseManager.getConnection();
              var ps = conn.prepareStatement("SELECT authToken, username FROM auth WHERE authToken=?")) {
             ps.setString(1, authToken);
             try (var rs = ps.executeQuery()) {
-                if (!rs.next()) return null;
+                if (!rs.next()) {
+                    return null;
+                }
                 return new AuthData(rs.getString("authToken"), rs.getString("username"));
             }
         } catch (SQLException e) {
@@ -37,7 +43,9 @@ public class MySqlAuthDAO implements AuthDAO {
 
     @Override
     public void deleteAuth(String authToken) throws DataAccessException {
-        if (authToken == null) return;
+        if (authToken == null) {
+            return;
+        }
 
         try (var conn = DatabaseManager.getConnection();
              var ps = conn.prepareStatement("DELETE FROM auth WHERE authToken=?")) {
