@@ -82,4 +82,26 @@ public class ServerFacade {
             return gson.fromJson(reader, responseClass);
         }
     }
+    private void throwIfNotSuccessful(HttpURLConnection http) throws Exception {
+        int status = http.getResponseCode();
+        if (status / 100 != 2) {
+            String message = "Error";
+            try (InputStream errorStream = http.getErrorStream()) {
+                if (errorStream != null) {
+                    var reader = new java.io.InputStreamReader(errorStream);
+                    ErrorResponse error = gson.fromJson(reader, ErrorResponse.class);
+                    if (error != null && error.message() != null) {
+                        message = error.message();
+                    }
+                }
+            }
+            throw new ResponseException(status, message);
+        }
+    }
+
+    private record ErrorResponse(String message) {}
+    private record CreateGameRequest(String gameName) {}
+    private record CreateGameResponse(int gameID) {}
+    private record JoinGameRequest(String playerColor, int gameID) {}
+    private record ListGamesResponse(Collection<GameData> games) {}
 }
