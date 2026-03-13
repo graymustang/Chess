@@ -104,4 +104,8 @@ public class ServerFacade {
     private record CreateGameResponse(int gameID) {}
     private record JoinGameRequest(String playerColor, int gameID) {}
     private record ListGamesResponse(Collection<GameData> games) {}
+
+    public void clear() throws Exception {
+        makeRequest("DELETE", "/db", null, null, null);
+    }
 }
