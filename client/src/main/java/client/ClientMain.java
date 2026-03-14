@@ -5,7 +5,7 @@ import chess.*;
 public class ClientMain {
 
     public static void main(String[] args) {
-        var port = 8080;
+        var port = 8000;
         if (args.length > 0) {
             port = Integer.parseInt(args[0]);
         }
