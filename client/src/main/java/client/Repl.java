@@ -68,8 +68,9 @@ public class Repl {
                 System.out.println("Logged out.");
             }
             case "create" -> {
-                var id = server.createGame(tokens[1], authToken);
-                System.out.println("Game created with ID " + id);
+                String gameName = input.substring("create".length()).trim();
+                var id = server.createGame(gameName, authToken);
+                System.out.println("Game created.");
             }
             case "list" -> {
                 lastGameList = new ArrayList<>(server.listGames(authToken));
@@ -86,6 +87,11 @@ public class Repl {
                 int index = Integer.parseInt(tokens[1]) - 1;
                 String color = tokens[2].toUpperCase();
 
+                if (index < 0 || index >= lastGameList.size()){
+                    System.out.println("Invalid game number.");
+                    return;
+                }
+
                 GameData  game = lastGameList.get(index);
                 server.joinGame(color, game.gameID(), authToken);
 
@@ -95,6 +101,10 @@ public class Repl {
             case "observe" -> {
                 int index = Integer.parseInt(tokens[1]) - 1;
 
+                if (index < 0 || index >= lastGameList.size()){
+                    System.out.println("Invalid game number.");
+                    return;
+                }
                 GameData  game = lastGameList.get(index);
                 server.joinGame(null, game.gameID(), authToken);
 
@@ -117,6 +127,7 @@ public class Repl {
     private void printPostloginHelp() {
         System.out.println("create <game name>");
         System.out.println("list");
+        System.out.println("play <game number> <white|black>");
         System.out.println("logout");
         System.out.println("help");
         System.out.println("quit");
