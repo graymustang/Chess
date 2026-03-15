@@ -1,5 +1,8 @@
 package client;
 
+import model.GameData;
+
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Repl {
@@ -69,8 +72,11 @@ public class Repl {
             }
             case "list" -> {
                 var games = server.listGames(authToken);
-                for (var g : games) {
+                lastGameList = new ArrayList<>(server.listGames(authToken));
+                int i = 1;
+                for (GameData g : lastGameList) {
                     System.out.println(g.gameID() + ": " + g.gameName());
+                    i++;
                 }
             }
 
@@ -94,4 +100,5 @@ public class Repl {
         System.out.println("help");
         System.out.println("quit");
     }
+    private List<GameData> lastGameList = new ArrayList<>();
 }
