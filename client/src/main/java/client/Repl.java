@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import model.GameData;
 
 import java.util.ArrayList;
@@ -96,6 +97,10 @@ public class Repl {
                 server.joinGame(color, game.gameID(), authToken);
 
                 System.out.println("Joined game " + game.gameName());
+
+                ChessGame chessGame = new ChessGame();
+                boolean whitePerspective = color.equals("WHITE");
+                BoardPrinter.printBoard(chessGame, whitePerspective);
             }
 
             case "observe" -> {
@@ -106,9 +111,11 @@ public class Repl {
                     return;
                 }
                 GameData  game = lastGameList.get(index);
-                server.joinGame(null, game.gameID(), authToken);
 
-                System.out.println("Joined game " + game.gameName());
+                System.out.println("Observing game " + game.gameName());
+
+                ChessGame chessGame = new ChessGame();
+                BoardPrinter.printBoard(chessGame, true);
             }
 
             case "quit" -> System.exit(0);
