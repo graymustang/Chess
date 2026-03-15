@@ -28,9 +28,9 @@ public class BoardPrinter {
     }
 
     private static void printRow(ChessBoard board, int row, boolean whitePerspective){
-        System.out.println(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
-        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLACK);
-        System.out.println(" " + row + " ");
+        System.out.print(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
+        System.out.print(EscapeSequences.SET_TEXT_COLOR_BLACK);
+        System.out.print(" " + row + " ");
 
         if(whitePerspective){
             for (int col = 1; col <= 8; col++){
@@ -41,9 +41,9 @@ public class BoardPrinter {
                 printSquare(board, row, col);
             }
         }
-        System.out.println(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
-        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLACK);
-        System.out.println(" " + row + " ");
+        System.out.print(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
+        System.out.print(EscapeSequences.SET_TEXT_COLOR_BLACK);
+        System.out.print(" " + row + " ");
 
     }
 
@@ -51,9 +51,9 @@ public class BoardPrinter {
         boolean lightsquare = (row + col) % 2 == 0;
 
         if (lightsquare){
-            System.out.println(EscapeSequences.SET_BG_COLOR_WHITE);
+            System.out.print(EscapeSequences.SET_BG_COLOR_WHITE);
         } else{
-            System.out.println(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
+            System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
         }
 
         ChessPiece piece = board.getPiece(new ChessPosition(row, col));
@@ -64,9 +64,9 @@ public class BoardPrinter {
         }
 
         if (piece.getTeamColor() == ChessGame.TeamColor.WHITE){
-            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED);
+            System.out.print(EscapeSequences.SET_TEXT_COLOR_RED);
         } else{
-            System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE);
+            System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE);
         }
 
         System.out.print(getPieceSymbol(piece));
@@ -92,6 +92,6 @@ public class BoardPrinter {
     private static void printColumnLabelsBlack(){
         System.out.print(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
         System.out.print(EscapeSequences.SET_TEXT_COLOR_BLACK);
-        System.out.println("   a  b  c  d  e  f  g  h   ");
+        System.out.println("   h  g  f  e  d  c  b  a   ");
     }
 }
