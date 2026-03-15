@@ -4,6 +4,7 @@ import model.GameData;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.List;
 
 public class Repl {
     private final ServerFacade server;
@@ -71,13 +72,33 @@ public class Repl {
                 System.out.println("Game created with ID " + id);
             }
             case "list" -> {
-                var games = server.listGames(authToken);
                 lastGameList = new ArrayList<>(server.listGames(authToken));
                 int i = 1;
                 for (GameData g : lastGameList) {
-                    System.out.println(g.gameID() + ": " + g.gameName());
+                    String white = (g.whiteUsername() == null) ? "-" : g.whiteUsername();
+                    String black = (g.blackUsername() == null) ? "-" : g.blackUsername();
+                    System.out.println(i + ". " + g.gameName() + " (white: " + white + ", black: " + black + ")");
                     i++;
                 }
+            }
+
+            case "play" ->{
+                int index = Integer.parseInt(tokens[1]) - 1;
+                String color = tokens[2].toUpperCase();
+
+                GameData  game = lastGameList.get(index);
+                server.joinGame(color, game.gameID(), authToken);
+
+                System.out.println("Joined game " + game.gameName());
+            }
+
+            case "observe" -> {
+                int index = Integer.parseInt(tokens[1]) - 1;
+
+                GameData  game = lastGameList.get(index);
+                server.joinGame(null, game.gameID(), authToken);
+
+                System.out.println("Joined game " + game.gameName());
             }
 
             case "quit" -> System.exit(0);
