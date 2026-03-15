@@ -44,6 +44,7 @@ public class BoardPrinter {
         System.out.print(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
         System.out.print(EscapeSequences.SET_TEXT_COLOR_BLACK);
         System.out.print(" " + row + " ");
+        System.out.println();
 
     }
 
@@ -59,6 +60,7 @@ public class BoardPrinter {
         ChessPiece piece = board.getPiece(new ChessPosition(row, col));
 
         if (piece == null) {
+            System.out.print(EscapeSequences.RESET_TEXT_COLOR);
             System.out.print("   ");
             return;
         }
