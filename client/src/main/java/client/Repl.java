@@ -38,16 +38,25 @@ public class Repl {
     }
 
     private void prelogin(String input) throws Exception {
-        var tokens = input.split(" ");
+        var tokens = input.trim().split("\\s+");
 
         switch (tokens[0]) {
             case "help" -> printPreloginHelp();
             case "register" -> {
+                if (tokens.length != 4){
+                    System.out.println("Correct Usage: register <username> <password> <email>");
+                    return;
+                }
                 var auth = server.register(tokens[1], tokens[2], tokens[3]);
                 authToken = auth.authToken();
                 System.out.println("Registered and logged in.");
             }
             case "login" -> {
+                if (tokens.length != 3){
+                    System.out.println("Correct Usage: login <username> <password>");
+                    return;
+                }
+
                 var auth = server.login(tokens[1], tokens[2]);
                 authToken = auth.authToken();
                 System.out.println("Logged in.");
@@ -59,21 +68,37 @@ public class Repl {
     }
 
     private void postlogin(String input) throws Exception {
-        var tokens = input.split(" ");
+        var tokens = input.trim().split("\\s+");
 
         switch (tokens[0]) {
             case "help" -> printPostloginHelp();
             case "logout" -> {
+                if (tokens.length != 1){
+                    System.out.println("Correct Usage: logout");
+                    return;
+                }
                 server.logout(authToken);
                 authToken = null;
                 System.out.println("Logged out.");
             }
             case "create" -> {
+                if (tokens.length < 2){
+                    System.out.println("Correct Usage: create <game name>");
+                    return;
+                }
                 String gameName = input.substring("create".length()).trim();
+                if(gameName.isEmpty()){
+                    System.out.println("Usage: create <game name>");
+                    return;
+                }
                 var id = server.createGame(gameName, authToken);
                 System.out.println("Game created.");
             }
             case "list" -> {
+                if (tokens.length != 1){
+                    System.out.println("Correct Usage: list");
+                    return;
+                }
                 lastGameList = new ArrayList<>(server.listGames(authToken));
                 int i = 1;
                 for (GameData g : lastGameList) {
@@ -85,11 +110,28 @@ public class Repl {
             }
 
             case "play" ->{
-                int index = Integer.parseInt(tokens[1]) - 1;
-                String color = tokens[2].toUpperCase();
+
+                if (tokens.length != 3){
+                    System.out.println("Correct usage: play <game number> <white|black>");
+                    return;
+                }
+
+                int index;
+                try {
+                    index = Integer.parseInt(tokens[1]) - 1;
+                } catch (NumberFormatException e){
+                    System.out.println("Game number must be an number");
+                    return;
+                }
 
                 if (index < 0 || index >= lastGameList.size()){
                     System.out.println("Invalid game number.");
+                    return;
+                }
+
+                String color = tokens[2].toUpperCase();
+                if (!color.equals("WHITE") && !color.equals("BLACK")){
+                    System.out.println("Color must be WHITE or BLACK");
                     return;
                 }
 
@@ -104,7 +146,18 @@ public class Repl {
             }
 
             case "observe" -> {
-                int index = Integer.parseInt(tokens[1]) - 1;
+
+                if (tokens.length != 2){
+                    System.out.println("Correct usage: observe <game number>");
+                    return;
+                }
+                int index;
+                try {
+                    index = Integer.parseInt(tokens[1]) - 1;
+                } catch (NumberFormatException e){
+                    System.out.println("Game number must be an number");
+                    return;
+                }
 
                 if (index < 0 || index >= lastGameList.size()){
                     System.out.println("Invalid game number.");
@@ -133,6 +186,7 @@ public class Repl {
 
     private void printPostloginHelp() {
         System.out.println("create <game name>");
+        System.out.println("observe");
         System.out.println("list");
         System.out.println("play <game number> <white|black>");
         System.out.println("logout");
