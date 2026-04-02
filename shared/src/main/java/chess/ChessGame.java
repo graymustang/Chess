@@ -12,6 +12,7 @@ import java.util.Objects;
  */
 public class ChessGame {
 
+    private boolean gameOver = false;
     private ChessBoard board;
     private TeamColor teamTurn;
 
@@ -79,6 +80,9 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        if (gameOver){
+            throw new InvalidMoveException("Game is over");
+        }
         if (move == null) {
             throw new InvalidMoveException("Move cannot be null");
         }
@@ -272,6 +276,14 @@ public class ChessGame {
         int r = pos.getRow();
         int c = pos.getColumn();
         return r >= 1 && r <= 8 && c >= 1 && c <= 8;
+    }
+
+    public boolean isGameOver(){
+        return gameOver;
+    }
+
+    public void setGameOver(boolean gameOver){
+        this.gameOver = gameOver;
     }
 
     @Override
