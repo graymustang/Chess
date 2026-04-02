@@ -3,6 +3,9 @@ package server;
 import io.javalin.Javalin;
 import dataaccess.*;
 import service.*;
+import io.javalin.Javalin;
+import dataaccess.*;
+import service.*;
 
 public class Server {
 
@@ -27,6 +30,13 @@ public class Server {
         UserHandler userHandler = new UserHandler(userService);
         GameHandler gameHandler = new GameHandler(gameService);
         ClearHandler clearHandler = new ClearHandler(clearService);
+        WebSocketHandler webSocketHandler = new WebSocketHandler(authDAO, gameDAO);
+
+        javalin.ws("/ws", ws -> {
+            ws.onConnect(webSocketHandler::onConnect);
+            ws.onMessage(webSocketHandler::onMessage);
+            ws.onClose(webSocketHandler::onClose);
+        });
 
         javalin.delete("/db", clearHandler::clear);
 
@@ -44,7 +54,6 @@ public class Server {
 
         javalin.exception(Exception.class, (e, ctx) ->
                 ctx.status(500).result(JsonUtil.GSON.toJson(new ErrorResult("Error: " + e.getMessage()))));
-
 
     }
 
