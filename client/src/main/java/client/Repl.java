@@ -143,6 +143,15 @@ public class Repl {
                 ChessGame chessGame = new ChessGame();
                 boolean whitePerspective = color.equals("WHITE");
                 BoardPrinter.printBoard(chessGame, whitePerspective);
+
+                GameData game = lastGameList.get(index);
+                server.joinGame(color, game.gameID(), authToken);
+
+                System.out.println("Joined game " + game.gameName());
+
+                boolean whitePerspective = color.equals("WHITE");
+                GameClient gameClient = new GameClient(server.getServerUrl(), authToken, game.gameID(), whitePerspective);
+                gameClient.run();
             }
 
             case "observe" -> {
@@ -169,8 +178,16 @@ public class Repl {
 
                 ChessGame chessGame = new ChessGame();
                 BoardPrinter.printBoard(chessGame, true);
+                GameData game = lastGameList.get(index);
+
+                System.out.println("Observing game " + game.gameName());
+
+                GameClient gameClient = new GameClient(server.getServerUrl(), authToken, game.gameID(), true);
+                gameClient.run();
+
             }
 
+            //no other checks for quit
             case "quit" -> System.exit(0);
 
             default -> System.out.println("Unknown command, type help.");
