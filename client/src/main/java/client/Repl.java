@@ -109,8 +109,8 @@ public class Repl {
                 }
             }
 
-            case "play" ->{
-
+            case "play" -> {
+                //now play will allow actual gameplay
                 if (tokens.length != 3){
                     System.out.println("Correct usage: play <game number> <white|black>");
                     return;
@@ -120,7 +120,7 @@ public class Repl {
                 try {
                     index = Integer.parseInt(tokens[1]) - 1;
                 } catch (NumberFormatException e){
-                    System.out.println("Game number must be an number");
+                    System.out.println("Game number must be a number");
                     return;
                 }
 
@@ -135,27 +135,24 @@ public class Repl {
                     return;
                 }
 
-                GameData  game = lastGameList.get(index);
-                server.joinGame(color, game.gameID(), authToken);
-
-                System.out.println("Joined game " + game.gameName());
-
-                ChessGame chessGame = new ChessGame();
-                boolean whitePerspective = color.equals("WHITE");
-                BoardPrinter.printBoard(chessGame, whitePerspective);
-
                 GameData game = lastGameList.get(index);
                 server.joinGame(color, game.gameID(), authToken);
 
                 System.out.println("Joined game " + game.gameName());
 
                 boolean whitePerspective = color.equals("WHITE");
-                GameClient gameClient = new GameClient(server.getServerUrl(), authToken, game.gameID(), whitePerspective);
+                GameClient gameClient = new GameClient(
+                        server.getServerUrl(),
+                        authToken,
+                        game.gameID(),
+                        whitePerspective,
+                        false
+                );
                 gameClient.run();
             }
 
             case "observe" -> {
-
+                // observe will now allow observing a game that is being played instead of just a state
                 if (tokens.length != 2){
                     System.out.println("Correct usage: observe <game number>");
                     return;
@@ -164,7 +161,7 @@ public class Repl {
                 try {
                     index = Integer.parseInt(tokens[1]) - 1;
                 } catch (NumberFormatException e){
-                    System.out.println("Game number must be an number");
+                    System.out.println("Game number must be a number");
                     return;
                 }
 
@@ -172,19 +169,13 @@ public class Repl {
                     System.out.println("Invalid game number.");
                     return;
                 }
-                GameData  game = lastGameList.get(index);
 
-                System.out.println("Observing game " + game.gameName());
-
-                ChessGame chessGame = new ChessGame();
-                BoardPrinter.printBoard(chessGame, true);
                 GameData game = lastGameList.get(index);
 
                 System.out.println("Observing game " + game.gameName());
 
-                GameClient gameClient = new GameClient(server.getServerUrl(), authToken, game.gameID(), true);
+                GameClient gameClient = new GameClient(server.getServerUrl(), authToken, game.gameID(), true, true);
                 gameClient.run();
-
             }
 
             //no other checks for quit
@@ -203,7 +194,7 @@ public class Repl {
 
     private void printPostloginHelp() {
         System.out.println("create <game name>");
-        System.out.println("observe");
+        System.out.println("observe <game number>");
         System.out.println("list");
         System.out.println("play <game number> <white|black>");
         System.out.println("logout");
