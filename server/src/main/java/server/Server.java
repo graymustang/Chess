@@ -30,6 +30,8 @@ public class Server {
         UserHandler userHandler = new UserHandler(userService);
         GameHandler gameHandler = new GameHandler(gameService);
         ClearHandler clearHandler = new ClearHandler(clearService);
+
+        //web socket handler endpoint
         WebSocketHandler webSocketHandler = new WebSocketHandler(authDAO, gameDAO);
 
         javalin.ws("/ws", ws -> {
