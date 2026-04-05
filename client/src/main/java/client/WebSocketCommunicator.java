@@ -21,10 +21,13 @@ public class WebSocketCommunicator {
         session.getBasicRemote().sendText(message);
     }
 
-    public void close() throws Exception_
+    public void close() throws Exception{
         if (session != null && session.isOpen()){
             session.close();
+        }
     }
+
+
     @OnOpen
     public void onOpen(Session session) {
         this.session = session;
