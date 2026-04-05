@@ -3,9 +3,6 @@ package server;
 import io.javalin.Javalin;
 import dataaccess.*;
 import service.*;
-import io.javalin.Javalin;
-import dataaccess.*;
-import service.*;
 
 public class Server {
 

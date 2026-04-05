@@ -116,6 +116,7 @@ public class GameClient {
     private void leave() throws Exception {
         var leaveCommand = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
         ws.send(gson.toJson(leaveCommand));
+        ws.close();
         running = false;
         System.out.println("Leaving game...");
     }

@@ -17,6 +17,7 @@ import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
+import io.javalin.websocket.WsMessageContext;
 
 public class WebSocketHandler {
 
@@ -41,7 +42,7 @@ public class WebSocketHandler {
         }
     }
 
-    public void onMessage(WsContext ctx) {
+    public void onMessage(WsMessageContext ctx) {
         try {
             JsonObject json = JsonParser.parseString(ctx.message()).getAsJsonObject();
             String commandType = json.get("commandType").getAsString();
