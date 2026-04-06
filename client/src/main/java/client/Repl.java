@@ -72,111 +72,11 @@ public class Repl {
 
         switch (tokens[0]) {
             case "help" -> printPostloginHelp();
-            case "logout" -> {
-                if (tokens.length != 1){
-                    System.out.println("Correct Usage: logout");
-                    return;
-                }
-                server.logout(authToken);
-                authToken = null;
-                System.out.println("Logged out.");
-            }
-            case "create" -> {
-                if (tokens.length < 2){
-                    System.out.println("Correct Usage: create <game name>");
-                    return;
-                }
-                String gameName = input.substring("create".length()).trim();
-                if(gameName.isEmpty()){
-                    System.out.println("Usage: create <game name>");
-                    return;
-                }
-                var id = server.createGame(gameName, authToken);
-                System.out.println("Game created.");
-            }
-            case "list" -> {
-                if (tokens.length != 1){
-                    System.out.println("Correct Usage: list");
-                    return;
-                }
-                lastGameList = new ArrayList<>(server.listGames(authToken));
-                int i = 1;
-                for (GameData g : lastGameList) {
-                    String white = (g.whiteUsername() == null) ? "-" : g.whiteUsername();
-                    String black = (g.blackUsername() == null) ? "-" : g.blackUsername();
-                    System.out.println(i + ". " + g.gameName() + " (white: " + white + ", black: " + black + ")");
-                    i++;
-                }
-            }
-
-            case "play" -> {
-                //now play will allow actual gameplay
-                if (tokens.length != 3){
-                    System.out.println("Correct usage: play <game number> <white|black>");
-                    return;
-                }
-
-                int index;
-                try {
-                    index = Integer.parseInt(tokens[1]) - 1;
-                } catch (NumberFormatException e){
-                    System.out.println("Game number must be a number");
-                    return;
-                }
-
-                if (index < 0 || index >= lastGameList.size()){
-                    System.out.println("Invalid game number.");
-                    return;
-                }
-
-                String color = tokens[2].toUpperCase();
-                if (!color.equals("WHITE") && !color.equals("BLACK")){
-                    System.out.println("Color must be WHITE or BLACK");
-                    return;
-                }
-
-                GameData game = lastGameList.get(index);
-                server.joinGame(color, game.gameID(), authToken);
-
-                System.out.println("Joined game " + game.gameName());
-
-                boolean whitePerspective = color.equals("WHITE");
-                GameClient gameClient = new GameClient(
-                        server.getServerUrl(),
-                        authToken,
-                        game.gameID(),
-                        whitePerspective,
-                        false
-                );
-                gameClient.run();
-            }
-
-            case "observe" -> {
-                // observe will now allow observing a game that is being played instead of just a state
-                if (tokens.length != 2){
-                    System.out.println("Correct usage: observe <game number>");
-                    return;
-                }
-                int index;
-                try {
-                    index = Integer.parseInt(tokens[1]) - 1;
-                } catch (NumberFormatException e){
-                    System.out.println("Game number must be a number");
-                    return;
-                }
-
-                if (index < 0 || index >= lastGameList.size()){
-                    System.out.println("Invalid game number.");
-                    return;
-                }
-
-                GameData game = lastGameList.get(index);
-
-                System.out.println("Observing game " + game.gameName());
-
-                GameClient gameClient = new GameClient(server.getServerUrl(), authToken, game.gameID(), true, true);
-                gameClient.run();
-            }
+            case "logout" -> logout(tokens);
+            case "create" -> create(input, tokens);
+            case "list" -> list(tokens);
+            case "play" -> play(tokens);
+            case "observe" -> observe(tokens);
 
             //no other checks for quit
             case "quit" -> System.exit(0);
@@ -185,6 +85,113 @@ public class Repl {
         }
     }
 
+    //methods for postLogin
+
+    private void logout(String[] tokens) throws Exception{
+        if (tokens.length != 1){
+            System.out.println("Correct Usage: logout");
+            return;
+        }
+        server.logout(authToken);
+        authToken = null;
+        System.out.println("Logged out.");
+    }
+
+    private void create(String input, String[] tokens) throws Exception{
+        if (tokens.length < 2){
+            System.out.println("Correct Usage: create <game name>");
+            return;
+        }
+        String gameName = input.substring("create".length()).trim();
+        if(gameName.isEmpty()){
+            System.out.println("Usage: create <game name>");
+            return;
+        }
+        var id = server.createGame(gameName, authToken);
+        System.out.println("Game created.");
+    }
+
+    private void list(String[] tokens) throws Exception{
+        if (tokens.length != 1){
+            System.out.println("Correct Usage: list");
+            return;
+        }
+        lastGameList = new ArrayList<>(server.listGames(authToken));
+        int i = 1;
+        for (GameData g : lastGameList) {
+            String white = (g.whiteUsername() == null) ? "-" : g.whiteUsername();
+            String black = (g.blackUsername() == null) ? "-" : g.blackUsername();
+            System.out.println(i + ". " + g.gameName() + " (white: " + white + ", black: " + black + ")");
+            i++;
+        }
+    }
+
+    private void play(String[] tokens) throws Exception {
+        //now play will allow actual gameplay
+        if (tokens.length != 3){
+            System.out.println("Correct usage: play <game number> <white|black>");
+            return;
+        }
+
+        int index;
+        try {
+            index = Integer.parseInt(tokens[1]) - 1;
+        } catch (NumberFormatException e){
+            System.out.println("Game number must be a number");
+            return;
+        }
+
+        if (index < 0 || index >= lastGameList.size()){
+            System.out.println("Invalid game number.");
+            return;
+        }
+
+        String color = tokens[2].toUpperCase();
+        if (!color.equals("WHITE") && !color.equals("BLACK")){
+            System.out.println("Color must be WHITE or BLACK");
+            return;
+        }
+
+        GameData game = lastGameList.get(index);
+        server.joinGame(color, game.gameID(), authToken);
+
+        System.out.println("Joined game " + game.gameName());
+
+        boolean whitePerspective = color.equals("WHITE");
+        GameClient gameClient = new GameClient(
+                server.getServerUrl(),
+                authToken,
+                game.gameID(),
+                whitePerspective,
+                false
+        );
+        gameClient.run();
+    }
+
+    private void observe(String[] tokens) throws Exception{
+        // observe will now allow observing a game that is being played instead of just a state
+        if (tokens.length != 2){
+            System.out.println("Correct usage: observe <game number>");
+            return;
+        }
+        int index;
+        try {
+            index = Integer.parseInt(tokens[1]) - 1;
+        } catch (NumberFormatException e){
+            System.out.println("Game number must be a number");
+            return;
+        }
+
+        if (index < 0 || index >= lastGameList.size()){
+            System.out.println("Invalid game number.");
+            return;
+        }
+
+        GameData game = lastGameList.get(index);
+        System.out.println("Observing game " + game.gameName());
+        GameClient gameClient = new GameClient(server.getServerUrl(), authToken, game.gameID(), true, true);
+        gameClient.run();
+    }
     private void printPreloginHelp() {
         System.out.println("register <username> <password> <email>");
         System.out.println("login <username> <password>");
