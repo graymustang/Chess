@@ -44,8 +44,8 @@ public class WebSocketCommunicator {
         System.out.println("Disconnected.");
     }
 
-    @OnError
-    public void onError(Session session, Throwable throwable) {
-        throwable.printStackTrace();
-    }
+   //@OnError
+   //public void onError(Session session, Throwable throwable) {
+   //     throwable.printStackTrace();
+   // }
 }

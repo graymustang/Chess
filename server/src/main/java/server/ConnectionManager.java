@@ -46,15 +46,15 @@ public class ConnectionManager {
         }
     }
 
-    public void sendToOne(Integer gameID, String username, String message) {
-        Map<String, WsContext> gameConnections = connections.get(gameID);
-        if (gameConnections == null) {
-            return;
-        }
+//public void sendToOne(Integer gameID, String username, String message) {
+//    Map<String, WsContext> gameConnections = connections.get(gameID);
+//    if (gameConnections == null) {
+//        return;
+//    }
 
-        WsContext session = gameConnections.get(username);
-        if (session != null) {
-            session.send(message);
-        }
-    }
+//    WsContext session = gameConnections.get(username);
+//    if (session != null) {
+//        session.send(message);
+//    }
+//}
 }
