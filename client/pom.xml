@@ -69,6 +69,7 @@
             <artifactId>tyrus-standalone-client</artifactId>
             <scope>compile</scope>
             <version>2.1.4</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
