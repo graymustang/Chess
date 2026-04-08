@@ -3,13 +3,20 @@ package server;
 import io.javalin.Javalin;
 import dataaccess.*;
 import service.*;
+import java.time.Duration;
 
 public class Server {
 
     private final Javalin javalin;
 
     public Server() {
-        javalin = Javalin.create(config -> config.staticFiles.add("web"));
+        //Changed the idle timeout to allow for longer time
+        javalin = Javalin.create(config -> {
+            config.staticFiles.add("web");
+            config.jetty.modifyWebSocketServletFactory(ws -> {
+                ws.setIdleTimeout(Duration.ofMinutes(10)); // ten minutes
+            });
+        });
 
         try {
             MySqlDatabase.init();
