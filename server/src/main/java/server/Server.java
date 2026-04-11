@@ -4,17 +4,26 @@ import io.javalin.Javalin;
 import dataaccess.*;
 import service.*;
 import java.time.Duration;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.ServerConnector;
 
 public class Server {
 
     private final Javalin javalin;
 
     public Server() {
-        //Changed the idle timeout to allow for longer time
         javalin = Javalin.create(config -> {
             config.staticFiles.add("web");
             config.jetty.modifyWebSocketServletFactory(ws -> {
-                ws.setIdleTimeout(Duration.ofMinutes(10)); // ten minutes
+                ws.setIdleTimeout(Duration.ofMinutes(10));
+            });
+            //Add timeout timer of 10 minutes
+            config.jetty.modifyServer(server -> {
+                for (Connector connector : server.getConnectors()) {
+                    if (connector instanceof ServerConnector sc) {
+                        sc.setIdleTimeout(Duration.ofMinutes(10).toMillis());
+                    }
+                }
             });
         });
 
@@ -35,7 +44,6 @@ public class Server {
         GameHandler gameHandler = new GameHandler(gameService);
         ClearHandler clearHandler = new ClearHandler(clearService);
 
-        //web socket handler endpoint
         WebSocketHandler webSocketHandler = new WebSocketHandler(authDAO, gameDAO);
 
         javalin.ws("/ws", ws -> {
@@ -45,12 +53,9 @@ public class Server {
         });
 
         javalin.delete("/db", clearHandler::clear);
-
         javalin.post("/user", userHandler::register);
-
         javalin.post("/session", userHandler::login);
         javalin.delete("/session", userHandler::logout);
-
         javalin.get("/game", gameHandler::list);
         javalin.post("/game", gameHandler::create);
         javalin.put("/game", gameHandler::join);
@@ -60,7 +65,6 @@ public class Server {
 
         javalin.exception(Exception.class, (e, ctx) ->
                 ctx.status(500).result(JsonUtil.GSON.toJson(new ErrorResult("Error: " + e.getMessage()))));
-
     }
 
     public int run(int desiredPort) {

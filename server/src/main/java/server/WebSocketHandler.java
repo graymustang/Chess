@@ -106,32 +106,41 @@ public class WebSocketHandler {
         ChessGame game = gameData.game();
 
         if (game.isGameOver()) {
-            throw new Exception("Error: game is already over");
+            throw new Exception("Game is already over");
         }
 
         ChessGame.TeamColor playerColor = getPlayerColor(username, gameData);
         if (playerColor == null) {
-            throw new Exception("Error: observers cannot make moves");
+            throw new Exception("Observers cannot make moves");
         }
 
         ChessMove move = command.getMove();
         if (move == null) {
-            throw new Exception("Error: missing move");
+            throw new Exception("Missing move");
         }
 
         ChessPiece piece = game.getBoard().getPiece(move.getStartPosition());
         if (piece == null) {
-            throw new Exception("Error: no piece at start square");
+            throw new Exception("No piece at start square");
         }
 
         if (piece.getTeamColor() != playerColor) {
-            throw new Exception("Error: cannot move opponent piece");
+            throw new Exception("Cannot move opponent piece");
         }
+
+        if (game.getTeamTurn() != playerColor) {
+            throw new Exception("Not your turn");
+        }
+        boolean wasInCheck = game.isInCheck(playerColor);
 
         try {
             game.makeMove(move);
         } catch (InvalidMoveException e) {
-            throw new Exception("Error: invalid move");
+            if (wasInCheck) {
+                throw new Exception("You are in check and must get out of check");
+            } else {
+                throw new Exception("invalid move");
+            }
         }
 
         GameData updated = new GameData(
@@ -231,11 +240,11 @@ public class WebSocketHandler {
 
         ChessGame.TeamColor playerColor = getPlayerColor(username, gameData);
         if (playerColor == null) {
-            throw new Exception("Error: observers cannot resign");
+            throw new Exception("Observers cannot resign");
         }
 
         if (gameData.game().isGameOver()) {
-            throw new Exception("Error: game is already over");
+            throw new Exception("Game is already over");
         }
 
         gameData.game().setGameOver(true);
